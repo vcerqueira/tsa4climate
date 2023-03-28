@@ -12,11 +12,11 @@ from src.model_selection import (MetaEstimator,
                                  search_space_with_feature_ext)
 
 
-from config import CHAPTER_ASSETS, CHAPTER_OUTPUTS
+from config import ASSETS, OUTPUTS
 
-CHAPTER = 'Chapter 3'
-assets = CHAPTER_ASSETS[CHAPTER]
-output_dir = CHAPTER_OUTPUTS[CHAPTER]
+CHAPTER = 'Part 1'
+assets = ASSETS[CHAPTER]
+output_dir = OUTPUTS[CHAPTER]
 
 data = pd.read_csv(f'{assets}/wind_df.csv', parse_dates=['datetime'], index_col='datetime')
 data.drop('rec_fcast', axis=1, inplace=True)
@@ -25,6 +25,7 @@ data.columns = ['Wind Power', 'Inst. Capacity']
 
 
 data['Norm. Wind Power'] = data['Wind Power'] / data['Inst. Capacity']
+data['Norm. Wind Power'][data['Norm. Wind Power'] > 1] = 1
 
 series = data['Norm. Wind Power'].resample('H').mean()
 series.iloc[np.where(series > 1)] = np.nan
@@ -39,9 +40,6 @@ train, test = train_test_split(series, test_size=0.2, shuffle=False)
 X_train, Y_train = time_delay_embedding(train, n_lags=24, horizon=24, return_Xy=True)
 X_test, Y_test = time_delay_embedding(test, n_lags=24, horizon=24, return_Xy=True)
 
-
-
-# print(X_train.head().round(2).to_latex())
 
 # Create a pipeline for hyperparameter optimization
 # 'feature' contains different possibilities for feature extraction
@@ -83,10 +81,10 @@ results['alpha'] = results['Score'] + .5
 
 plt_results = ggplot(results) + \
               aes(x='Horizon', y='Score', fill='Score') + \
-              theme_538(base_family='Palatino', base_size=12) + \
+              theme_classic(base_family='Palatino', base_size=12) + \
               theme(plot_margin=.2,
                     axis_text_y=element_text(size=12),
-                    axis_text_x=element_text(size=8)) + \
+                    axis_text_x=element_text(size=10)) + \
               geom_bar(stat='identity',
                        position='dodge') + \
               xlab('') + \
@@ -104,7 +102,7 @@ df = pd.DataFrame({'Predicted': Y_hat_test[target_h].values,
 
 plt_dist = ggplot(df) + \
            aes(x='Predicted', y='Actual') + \
-           theme_538(base_family='Palatino', base_size=12) + \
+           theme_classic(base_family='Palatino', base_size=11) + \
            theme(plot_margin=.175,
                  axis_text_y=element_text(size=10),
                  axis_text_x=element_text(size=10)) + \
@@ -119,5 +117,5 @@ plt_dist = ggplot(df) + \
            xlab('Predicted values') + \
            ylab('Actual values')
 
-plt_results.save(f'{output_dir}/wind_results.pdf', height=5, width=13)
-plt_dist.save(f'{output_dir}/wind_results_extreme.pdf', height=7, width=8)
+plt_results.save(f'{output_dir}/wind_results.pdf', height=7, width=13)
+plt_dist.save(f'{output_dir}/wind_results_extreme.pdf', height=4, width=5)

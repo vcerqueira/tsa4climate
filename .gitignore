@@ -6,6 +6,7 @@
 data/
 _dev/
 .ipynb
+config_hidden.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

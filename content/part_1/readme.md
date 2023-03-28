@@ -1,4 +1,4 @@
-Problem: ocean waves height forecasting
+Problem: Wind power forecasting
 
 Learnables:
  - Univariate time series forecasting

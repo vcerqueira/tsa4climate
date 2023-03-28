@@ -4,16 +4,17 @@ import numpy as np
 import pandas as pd
 from plotnine import *
 
-from config import CHAPTER_ASSETS, CHAPTER_OUTPUTS
+from config import ASSETS, OUTPUTS
 
-CHAPTER = 'Chapter 3'
-assets = CHAPTER_ASSETS[CHAPTER]
-output_dir = CHAPTER_OUTPUTS[CHAPTER]
+PART = 'Part 1'
+assets = ASSETS[PART]
+output_dir = OUTPUTS[PART]
 
 data = pd.read_csv(f'{assets}/wind_df.csv', parse_dates=['datetime'], index_col='datetime')
 data.drop('rec_fcast', axis=1, inplace=True)
 data = data.loc[[2013 < x < 2018 for x in data.index.year], :]
 data.columns = ['Wind Power', 'Inst. Capacity']
+data['Wind Power'][data['Wind Power'] > data['Inst. Capacity']] = np.nan
 
 data_melted = data.reset_index().melt('datetime')
 
@@ -42,7 +43,6 @@ series = series.ffill()
 series_df_d = series.resample('D').mean().reset_index()
 series_df_h_sample = series[:(24 * 93)].reset_index()
 series_df_h_dt = series[:(24 * 93)].diff().reset_index()
-# VER ISTO, DEVIA USAR % NAO?
 change_thr = 0.1
 
 # daily series. higher granularity for visualization
@@ -72,19 +72,34 @@ plot_uv_h4m = ggplot(series_df_h_sample) + \
               ggtitle('')
 
 # same 4 months but series of changes
-plot_uv_h4m_dt = ggplot(series_df_h_dt) + \
-                 aes(x='datetime', y='Norm. Wind Power', group=1) + \
-                 theme_classic(base_family='Palatino', base_size=12) + \
-                 theme(plot_margin=.15,
-                       axis_text=element_text(size=12),
-                       legend_title=element_blank(),
-                       legend_position='top') + \
-                 geom_line(size=0.9, color='#555555') + \
-                 geom_hline(yintercept=change_thr, linetype='dashed', color='red', size=1.1) + \
-                 geom_hline(yintercept=-change_thr, linetype='dashed', color='red', size=1.1) + \
-                 xlab('') + \
-                 ylab('Hourly Changes in Wind Power') + \
-                 ggtitle('')
+plot_uv_h4m_dt = \
+    ggplot(series_df_h_dt) + \
+    aes(x='datetime', y='Norm. Wind Power', group=1) + \
+    theme_classic(base_family='Palatino', base_size=12) + \
+    theme(plot_margin=.15,
+          axis_text=element_text(size=12),
+          legend_title=element_blank(),
+          legend_position='top') + \
+    geom_line(size=0.9, color='#555555') + \
+    geom_hline(yintercept=change_thr, linetype='dashed', color='red', size=1.1) + \
+    geom_hline(yintercept=-change_thr, linetype='dashed', color='red', size=1.1) + \
+    xlab('') + \
+    ylab('Hourly Changes in Wind Power') + \
+    ggtitle('')
+
+# plot_hist = ggplot(series.diff().reset_index()) + \
+#             aes(x='Norm. Wind Power') + \
+#             theme_classic(base_family='Palatino', base_size=12) + \
+#             theme(plot_margin=.15,
+#                   axis_text=element_text(size=12),
+#                   legend_title=element_blank(),
+#                   legend_position='top') + \
+#             geom_histogram(alpha=.9,
+#                            bins=50,
+#                            color='#192841',
+#                            fill='#192841') + \
+#             xlab('Norm. Wind Power') + \
+#             ylab('Frequency')
 
 series_above_thr = series.diff() > change_thr
 series_below_thr = series.diff() < -change_thr
