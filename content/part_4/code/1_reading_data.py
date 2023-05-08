@@ -4,7 +4,7 @@ from mizani.formatters import date_format
 from numerize import numerize
 
 from src.acf import AutoCorrelation
-from config_hidden import ASSETS, OUTPUTS
+from config import ASSETS, OUTPUTS
 
 CHAPTER = 'Part 4'
 assets = ASSETS[CHAPTER]

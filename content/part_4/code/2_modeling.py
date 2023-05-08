@@ -7,7 +7,7 @@ from plotnine import *
 from src.tde import time_delay_embedding
 from src.fourier import FourierTerms
 from src.error import mase
-from config_hidden import ASSETS, OUTPUTS
+from config import ASSETS, OUTPUTS
 
 CHAPTER = 'Part 4'
 assets = ASSETS[CHAPTER]
