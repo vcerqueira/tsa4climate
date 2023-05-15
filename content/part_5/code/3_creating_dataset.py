@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from config_hidden import ASSETS, OUTPUTS
+from config import ASSETS, OUTPUTS
 
 PART = 'Part 5'
 assets = ASSETS[PART]
