@@ -86,3 +86,29 @@ def mts_to_tabular(data: pd.DataFrame,
         Y = Y.iloc[:, 0]
 
     return X, Y
+
+
+def from_matrix_to_3d(df: pd.DataFrame) -> np.ndarray:
+    """
+    Transforming a time series from matrix into 3-d structure for deep learning
+
+    :param df: (pd.DataFrame) Time series in the matrix format after embedding
+
+    :return: Reshaped time series into 3-d structure
+    """
+
+    cols = df.columns
+
+    # getting unique variables in the time series
+    # this list has a single element for univariate time series
+    var_names = np.unique([re.sub(r'\([^)]*\)', '', c) for c in cols]).tolist()
+
+    # getting observation for each variable
+    arr_by_var = [df.loc[:, cols.str.contains(v)].values for v in var_names]
+    # reshaping the data of each variable into a 3-d format
+    arr_by_var = [x.reshape(x.shape[0], x.shape[1], 1) for x in arr_by_var]
+
+    # concatenating the arrays of each variable into a single array
+    ts_arr = np.concatenate(arr_by_var, axis=2)
+
+    return ts_arr
