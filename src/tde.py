@@ -112,3 +112,42 @@ def from_matrix_to_3d(df: pd.DataFrame) -> np.ndarray:
     ts_arr = np.concatenate(arr_by_var, axis=2)
 
     return ts_arr
+
+
+def from_3d_to_matrix(arr: np.ndarray, col_names: pd.Index):
+    if arr.shape[2] > 1:
+        arr_split = np.dsplit(arr, arr.shape[2])
+    else:
+        arr_split = [arr]
+
+    arr_reshaped = [x.reshape(x.shape[0], x.shape[1]) for x in arr_split]
+
+    df = pd.concat([pd.DataFrame(x) for x in arr_reshaped], axis=1)
+
+    df.columns = col_names
+
+    return df
+
+
+def transform_mv_series(dataset: pd.DataFrame, n_lags: int, horizon: int):
+    # preparing the time series for supervised learning
+    # transforming each variable into a matrix format
+    mat_by_variable = []
+    for col in dataset:
+        col_df = time_delay_embedding(dataset[col], n_lags=n_lags, horizon=horizon)
+        mat_by_variable.append(col_df)
+
+    # concatenating all variables
+    mat_df = pd.concat(mat_by_variable, axis=1).dropna()
+
+    # defining target (Y) and explanatory variables (X)
+    predictor_variables = mat_df.columns.str.contains('\(t\-|\(t\)')
+    target_variables = mat_df.columns.str.contains('\(t\+')
+    X = mat_df.iloc[:, predictor_variables]
+    Y = mat_df.iloc[:, target_variables]
+    target_colnames = Y.columns
+
+    X_3d = from_matrix_to_3d(X)
+    Y_3d = from_matrix_to_3d(Y)
+
+    return X_3d, Y_3d, target_colnames
