@@ -5,7 +5,6 @@
 .ipynb_checkpoints
 data/
 _dev/
-.ipynb
 config_hidden.py
 
 # Byte-compiled / optimized / DLL files
