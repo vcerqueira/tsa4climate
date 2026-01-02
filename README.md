@@ -10,7 +10,7 @@ The project is divided into 8 distinct tasks, ranging from renewable energy fore
 
 Each module includes a dedicated implementation folder and an accompanying article explaining the methodology and impact.
 
-| Task | Problem Domain | Forecasting Technique | Article Link |
+| Task | Problem Domain | Forecasting Topic | Article Link |
 | :--- | :--- | :--- | :--- |
 | **Part 1** | **Wind Power** | Univariate Forecasting | [Read Article](https://medium.com/data-science/time-series-for-climate-change-forecasting-wind-power-8ed6d653a255) |
 | **Part 2** | **Solar Radiation** | Multivariate Forecasting | [Read Article](https://medium.com/data-science/time-series-for-climate-change-solar-irradiance-forecasting-a972dac7418f) |
